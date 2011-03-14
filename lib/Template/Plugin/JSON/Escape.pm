@@ -1,82 +1,57 @@
-#!/usr/bin/perl
+package Template::Plugin::JSON::Escape;
+use strict;
+use warnings;
 
-package Template::Plugin::JSON;
-use Moose;
-
+use base qw/Class::Accessor::Fast Template::Plugin/;
 use JSON ();
 
-use Carp qw/croak/;
+our $VERSION = "0.01";
 
-extends qw(Moose::Object Template::Plugin);
+__PACKAGE__->mk_accessors( qw/converter args/ );
 
-our $VERSION = "0.06";
+sub new {
+    my ($class, $context, @args) = @_;
+    my $self = $class->SUPER::new( { args => ref $args[0] ? $args[0] : {} } );
 
+	$context->define_vmethod( $_ => json => sub { $self->json( @_ ) } ) for qw(hash list scalar);
+    $context->define_filter( json => \&json_filter );
 
-has context => (
-	isa => "Object",
-	is  => "ro",
-);
-
-has json_converter => (
-	isa => "Object",
-	is  => "ro",
-	lazy_build => 1,
-);
-
-has json_args => (
-	isa => "HashRef",
-	is  => "ro",
-	default => sub { {} },
-);
-
-sub BUILDARGS {
-    my ( $class, $c, @args ) = @_;
-
-	my $args;
-
-	if ( @args == 1 and not ref $args[0] ) {
-		warn "Single argument form is deprecated, this module always uses JSON/JSON::XS now";
-	}
-
-	$args = ref $args[0] ? $args[0] : {};
-
-	return { %$args, context => $c, json_args => $args };
+    return $self;
 }
 
-sub _build_json_converter {
+sub json_converter {
 	my $self = shift;
+    return $self->converter if $self->converter;
 
-	my $json = JSON->new->allow_nonref(1);
-
-	my $args = $self->json_args;
-
-	for my $method (keys %$args) {
-		if ( $json->can($method) ) {
-			$json->$method( $args->{$method} );
-		}
+	my $json = JSON->new->allow_nonref;
+	my $args = $self->args;
+	for ( keys %$args ) {
+        $json->$_( $args->{ $_ } ) if $json->can( $_ );
 	}
-
-	return $json;
+	return $self->converter( $json );
 }
 
 sub json {
-	my ( $self, $value ) = @_;
-
-	$self->json_converter->encode($value);
+	my ($self, $value) = @_;
+	$self->json_converter->encode( $value );
 }
 
 sub json_decode {
-	my ( $self, $value ) = @_;
-
-	$self->json_converter->decode($value);
+	my ($self, $value) = @_;
+	$self->json_converter->decode( $value );
 }
 
-sub BUILD {
-	my $self = shift;
-	$self->context->define_vmethod( $_ => json => sub { $self->json(@_) } ) for qw(hash list scalar);
+sub json_filter {
+    my $value = shift;
+    $value =~ s!&!\\u0026!g;
+    $value =~ s!<!\\u003c!g;
+    $value =~ s!>!\\u003e!g;
+    $value =~ s!\x{2028}!\\u2028!g;
+    $value =~ s!\x{2029}!\\u2029!g;
+    $value;
 }
 
-__PACKAGE__;
+1;
 
 __END__
 

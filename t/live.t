@@ -8,10 +8,10 @@ use Test::More tests => 9;
 use Template;
 use JSON;
 
-use ok 'Template::Plugin::JSON';
+use ok 'Template::Plugin::JSON::Escape';
 
 ok( Template->new->process(
-	\qq{[% USE JSON ( pretty => 1 ) %]{ "blah":[% blah.json %], "baz":[% baz.json %], "oink":[% oink.json %] }},
+	\qq{[% USE JSON.Escape ( pretty => 1 ) %]{ "blah":[% blah.json %], "baz":[% baz.json %], "oink":[% oink.json %] }},
 	my $vars = {
 		blah => { foo => "bar" },
 		baz  => "ze special string wis some ' qvotes\"",
@@ -35,7 +35,7 @@ my $warnings = 0;
 local $SIG{__WARN__} = sub { $warnings++ };
 
 ok( Template->new->process(
-	\'[% USE JSON %][% SET foo = [ 1, 2, 3 ]; foo.json %]',
+	\'[% USE JSON.Escape %][% SET foo = [ 1, 2, 3 ]; foo.json %]',
 	{},
 	\(my $blah),
 ), "template processing" ) || warn( Template->error );
@@ -44,8 +44,8 @@ is( $warnings, 0, "no warning" );
 
 # pass JSON to the template
 ok( Template->new->process(
-        \qq{[% USE JSON %][% USE Dumper -%]
-	    [%- val = JSON.json_decode(json_string) -%]
+        \qq{[% USE JSON.Escape %][% USE Dumper -%]
+	    [%- val = JSON.Escape.json_decode(json_string) -%]
 	    [%- 'ok' IF val.blah.foo == 'bar' -%]},
         my $json_vars = {
             json_string => $out,
