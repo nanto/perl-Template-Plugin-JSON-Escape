@@ -1,0 +1,22 @@
+0.06
+	- add json_decode method patch by Leo Lapworth
+
+0.05
+	- Don't warn when no arguments are passed
+	- fix typo in deprecation warning
+
+0.04
+	- Switch to using just JSON
+	- Drop Template::Plugin::VMethods, Template::Plugin now has the required
+	  functionality
+	- Accept options (like to_json) in USE statement (thanks to Ankur Patwa for
+	  the idea)
+
+0.03
+	- use JSON::Any & JSON::XS
+
+0.02
+	- Fix broken SCALAR_OPS
+
+0.01
+	- Initial release
