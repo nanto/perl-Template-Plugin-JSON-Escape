@@ -2,43 +2,42 @@ package Template::Plugin::JSON::Escape;
 use strict;
 use warnings;
 
-use base qw/Class::Accessor::Fast Template::Plugin/;
+use base qw/Template::Plugin/;
 use JSON ();
 
 our $VERSION = "0.01";
 
-__PACKAGE__->mk_accessors( qw/converter args/ );
-
 sub new {
-    my ($class, $context, @args) = @_;
-    my $self = $class->SUPER::new( { args => ref $args[0] ? $args[0] : {} } );
+    my ($class, $context, $args) = @_;
+    my $self = bless { json => undef, args => $args }, $class;
 
-	$context->define_vmethod( $_ => json => sub { $self->json( @_ ) } ) for qw(hash list scalar);
+    my $encode = sub { $self->json_encode( @_ ) };
+    $context->define_vmethod( $_ => json => $encode ) for qw/hash list scalar/;
     $context->define_filter( json => \&json_filter );
 
     return $self;
 }
 
-sub json_converter {
-	my $self = shift;
-    return $self->converter if $self->converter;
+sub json {
+    my $self = shift;
+    return $self->{json} if $self->{json};
 
-	my $json = JSON->new->allow_nonref;
-	my $args = $self->args;
-	for ( keys %$args ) {
+    my $json = JSON->new->allow_nonref;
+    my $args = $self->{args};
+    for ( keys %$args ) {
         $json->$_( $args->{ $_ } ) if $json->can( $_ );
-	}
-	return $self->converter( $json );
+    }
+    return $self->{json} = $json;
 }
 
-sub json {
-	my ($self, $value) = @_;
-	$self->json_converter->encode( $value );
+sub json_encode {
+    my ($self, $value) = @_;
+    json_filter( $self->json->encode( $value ) );
 }
 
 sub json_decode {
-	my ($self, $value) = @_;
-	$self->json_converter->decode( $value );
+    my ($self, $value) = @_;
+    $self->json->decode( $value );
 }
 
 sub json_filter {
@@ -63,19 +62,19 @@ Template::Plugin::JSON - Adds a .json vmethod for all TT values.
 
 =head1 SYNOPSIS
 
-	[% USE JSON ( pretty => 1 ) %];
+    [% USE JSON ( pretty => 1 ) %];
 
-	<script type="text/javascript">
+    <script type="text/javascript">
 
-		var foo = [% foo.json %];
+        var foo = [% foo.json %];
 
-	</script>
+    </script>
 
-	or read in JSON
+    or read in JSON
 
-	[% USE JSON %]
-	[% data = JSON.json_decode(json) %]
-	[% data.thing %]
+    [% USE JSON %]
+    [% data = JSON.json_decode(json) %]
+    [% data.thing %]
 
 =head1 DESCRIPTION
 
