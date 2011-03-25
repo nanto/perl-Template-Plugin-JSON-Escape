@@ -5,7 +5,7 @@ use warnings;
 use base qw/Template::Plugin/;
 use JSON ();
 
-our $VERSION = "0.01";
+our $VERSION = '0.01';
 
 sub new {
     my ($class, $context, $args) = @_;
@@ -58,22 +58,23 @@ __END__
 
 =head1 NAME
 
-Template::Plugin::JSON - Adds a .json vmethod for all TT values.
+Template::Plugin::JSON::Escape - Adds a .json vmethod and a json filter.
 
 =head1 SYNOPSIS
 
-    [% USE JSON ( pretty => 1 ) %];
+    [% USE JSON.Escape( pretty => 1 ) %];
 
     <script type="text/javascript">
 
         var foo = [% foo.json %];
+        var bar = [% json_string | json %]
 
     </script>
 
     or read in JSON
 
-    [% USE JSON %]
-    [% data = JSON.json_decode(json) %]
+    [% USE JSON.Escape %]
+    [% data = JSON.Escape.json_decode(json) %]
     [% data.thing %]
 
 =head1 DESCRIPTION
@@ -88,7 +89,7 @@ Any options on the USE line are passed through to the JSON object, much like L<J
 
 =head1 SEE ALSO
 
-L<JSON>, L<Template::Plugin>
+L<JSON>, L<Template::Plugin>, L<Template::Plugin::JSON>
 
 =head1 VERSION CONTROL
 
@@ -96,11 +97,12 @@ L<http://github.com/nothingmuch/template-plugin-json/>
 
 =head1 AUTHOR
 
-Yuval Kogman <nothingmuch@woobling.org>
+nanto_vi (TOYAMA Nao) <nanto@moon.email.ne.jp>
 
 =head1 COPYRIGHT & LICENSE
 
 Copyright (c) 2006, 2008 Infinity Interactive, Yuval Kogman.
+Copyright (c) 2011 nanto_vi (TOYAMA Nao).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -121,4 +123,3 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 =cut
-
