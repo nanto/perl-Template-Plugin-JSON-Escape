@@ -6,18 +6,15 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    'NAME'         => 'Template::Plugin::JSON',
-	'VERSION_FROM' => 'lib/Template/Plugin/JSON.pm',
+    'NAME'         => 'Template::Plugin::JSON::Escape',
+	'VERSION_FROM' => 'lib/Template/Plugin/JSON/Escape.pm',
 	'PREREQ_PM' => {
-		'Moose'         => '0',
-		'Template'      => '2.20',
-		'Test::More'    => '0',
-		'Test::use::ok' => '0',
-		'JSON'          => '2.12',
+		'Template'   => '2.20',
+		'Test::More' => '0',
+		'JSON'       => '2.12',
 	},
     'INSTALLDIRS' => 'site',
     'EXE_FILES'   => [],
-    'SIGN'        => 1,
     'PL_FILES'    => {}
 );
 
