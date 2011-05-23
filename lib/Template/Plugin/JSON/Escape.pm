@@ -79,21 +79,54 @@ Template::Plugin::JSON::Escape - Adds a .json vmethod and a json filter.
 
 =head1 DESCRIPTION
 
-This plugin provides a C<.json> vmethod to all value types when loaded. You
-can also decode a json string back to a data structure.
+This plugin allows you to embed JSON strings in HTML.  In the output, special characters such as C<E<lt>> and C<&> are escaped as C<\uxxxx> to prevent XSS attacks.
 
-It will load the L<JSON> module (you probably want L<JSON::XS> installed for
-automatic speed ups).
+It also provides decoding function to keep compatibility with L<Template::Plugin::JSON>.
+
+=head1 FEATURES
+
+=head2 USE JSON.Escape
 
 Any options on the USE line are passed through to the JSON object, much like L<JSON/to_json>.
 
+=head2 json vmethod
+
+A C<.json> vmethod converts scalars, arrays and hashes into corresponding JSON strings.
+
+    [% json_stuct = { foo => 42, bar => [ 1, 2, 3 ] } %]
+    
+    <script>
+        var json = [% json_struct.json %];
+    </script>
+    
+    <span onclick="doSomething([% json_struct.json %]);">
+
+=head2 json filter
+
+A C<json> filter escapes C<E<lt>>, C<E<gt>>, C<&>, C<U+2028> and C<U+2029> as C<\uxxxx>. In the attribute, you may just use an C<html> filter.
+
+    [% json_string = '{ "foo": 42, "bar": [ 1, 2, 3 ] }' %]
+    
+    <script>
+        var json = [% json_string | json %];
+    </script>
+    
+    <span onclick="doSomething([% json_string | html %]);">
+
+=head2 json_decode method
+
+A C<json_decode> method allow you to convert from a JSON string into a corresponding data structure.
+
+    [% SET json_struct = JSON.Escape.json_decode(json_string) %]
+    [% json_struct.foo | html %]
+
 =head1 SEE ALSO
 
-L<JSON>, L<Template::Plugin>, L<Template::Plugin::JSON>
+L<Template::Plugin::JSON>, L<JSON>, L<Template::Plugin>
 
 =head1 VERSION CONTROL
 
-L<http://github.com/nothingmuch/template-plugin-json/>
+L<https://github.com/nanto/perl-Template-Plugin-JSON-Escape>
 
 =head1 AUTHOR
 
@@ -101,8 +134,9 @@ nanto_vi (TOYAMA Nao) <nanto@moon.email.ne.jp>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright (c) 2006, 2008 Infinity Interactive, Yuval Kogman.
 Copyright (c) 2011 nanto_vi (TOYAMA Nao).
+
+Copyright (c) 2006, 2008 Infinity Interactive, Yuval Kogman.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
