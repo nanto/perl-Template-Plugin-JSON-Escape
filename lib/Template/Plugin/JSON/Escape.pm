@@ -45,6 +45,7 @@ sub json_filter {
     $value =~ s!&!\\u0026!g;
     $value =~ s!<!\\u003c!g;
     $value =~ s!>!\\u003e!g;
+    $value =~ s!\+!\\u002b!g;
     $value =~ s!\x{2028}!\\u2028!g;
     $value =~ s!\x{2029}!\\u2029!g;
     $value;
@@ -103,7 +104,7 @@ A C<.json> vmethod converts scalars, arrays and hashes into corresponding JSON s
 
 =head2 json filter
 
-A C<json> filter escapes C<E<lt>>, C<E<gt>>, C<&>, C<U+2028> and C<U+2029> as C<\uxxxx>. In the attribute, you may just use an C<html> filter.
+A C<json> filter escapes C<E<lt>>, C<E<gt>>, C<&>, C<+>, C<U+2028> and C<U+2029> as C<\uxxxx>. In the attribute, you may just use an C<html> filter.
 
     [% json_string = '{ "foo": 42, "bar": [ 1, 2, 3 ] }' %]
     
