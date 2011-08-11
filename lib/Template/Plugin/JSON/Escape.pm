@@ -63,7 +63,7 @@ Template::Plugin::JSON::Escape - Adds a .json vmethod and a json filter.
 
 =head1 SYNOPSIS
 
-    [% USE JSON.Escape( pretty => 1 ) %];
+    [% USE JSON.Escape( pretty => 1 ) %]
 
     <script type="text/javascript">
 
