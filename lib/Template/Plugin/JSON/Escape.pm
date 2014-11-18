@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use base qw/Template::Plugin/;
-use JSON ();
+use JSON::MaybeXS qw(JSON);
 
 our $VERSION = 0.02;
 

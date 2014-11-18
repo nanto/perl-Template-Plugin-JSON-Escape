@@ -9,17 +9,11 @@ WriteMakefile(
     'NAME'         => 'Template::Plugin::JSON::Escape',
 	'VERSION_FROM' => 'lib/Template/Plugin/JSON/Escape.pm',
 	'PREREQ_PM' => {
-		'Template'   => '2.20',
-		'Test::More' => '0',
-		'JSON'       => '2.12',
+		'Template'      => '2.20',
+		'Test::More'    => '0',
+		'JSON::MaybeXS' => '1.003002',
 	},
     'INSTALLDIRS' => 'site',
     'EXE_FILES'   => [],
     'PL_FILES'    => {}
 );
-
-unless ( eval { require JSON::XS } ) {
-warn <<WARN
-JSON::XS is reccomended, you should probably install it for better performance.
-WARN
-}
